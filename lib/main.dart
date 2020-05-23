@@ -1,3 +1,6 @@
+import 'dart:html';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -23,7 +26,7 @@ class MyApp extends StatelessWidget {
 class PhotoList extends StatefulWidget {
   @override
   PhotoListState createState() => PhotoListState();
-}}
+}
 
 class PhotoListState extends State<PhotoList> {
   StreamController<Photo> streamController;
@@ -38,13 +41,56 @@ class PhotoListState extends State<PhotoList> {
   }
 
   load(StreamController sc) async {
-    String url ='https://jsonplaceholder.typicode.com/photos';
+    String url = 'https://jsonplaceholder.typicode.com/photos';
     var client = new http.Client();
-    var req= new http.Request('get', Uri.parse(url));
-    var streamRes.stream.transform(UTF8.decoder).transform(json.decode).expand(e)=>e).map((map)=> Photo.fromJsonMap(map));
+    var req = new http.Request('get', Uri.parse(url));
+
+    var streamedRes = await client.send(req);
+
+    streamedRes.stream
+        .transform(utf8.decoder)
+        .transform(json.decoder)
+        .expand((e) => e)
+        .map((map) => Photo.fromJsonMap(map))
+        .pipe(streamController);
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    streamController?.close();
+    streamController = null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(title: Text("Photo Streams"),
+        ),
+        body: Center(child: ListView.builder(
+          itemBuilder: (BuildContext context, int index) => _makeElement(index),
+        )
+        )
+    );
+  }
+
+  Widget _makeElement(int index) {
+    if (index >= list.length) {
+      return null;
+    }
+    return Container(
+      padding: EdgeInsets.all(5.0),
+      child: Column(
+        children: <Widget>[
+          Image.network(list[index].url),
+          Text(list[index].title),
+
+        ],
+      ),
+    );
+  }
 }
+
 
 class Photo {
   final String title;
