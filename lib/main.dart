@@ -1,5 +1,4 @@
-import 'dart:html';
-
+//import 'dart:html';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -65,13 +64,14 @@ class PhotoListState extends State<PhotoList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Photo Streams"),
+        appBar: AppBar(
+          title: Text("Photo Streams"),
         ),
-        body: Center(child: ListView.builder(
+        body: Center(
+            child: ListView.builder(
+          scrollDirection: Axis.horizontal,
           itemBuilder: (BuildContext context, int index) => _makeElement(index),
-        )
-        )
-    );
+        )));
   }
 
   Widget _makeElement(int index) {
@@ -80,17 +80,17 @@ class PhotoListState extends State<PhotoList> {
     }
     return Container(
       padding: EdgeInsets.all(5.0),
-      child: Column(
-        children: <Widget>[
-          Image.network(list[index].url),
-          Text(list[index].title),
-
-        ],
+      child: Padding( padding: EdgeInsets.only(top:200.0),
+        child: Column(
+          children: <Widget>[
+            Image.network(list[index].url, width: 150.0,height: 150.0),
+            Text(list[index].title),
+          ],
+        ),
       ),
     );
   }
 }
-
 
 class Photo {
   final String title;
